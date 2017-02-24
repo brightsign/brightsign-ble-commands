@@ -11,7 +11,7 @@ End Function
 Function newBluetoothManager(msgPort as Object, userVariables As Object, bsp as Object)
 	bt = {}
 
-	bt.version = "0.0.10"
+	bt.version = "0.0.11"
 	bt.objectName = "bluetooth"
 
 	bt.appId$ = "001cff90"
@@ -125,12 +125,16 @@ Function bt_ProcessEvent(event As Object) as Boolean
 			print m.clientParams
 			m.bsp.btManager.StartBtleClient(m.clientParams, m.appId$, m.txPower)
 
-			m.bsp.btManager.btleClientManager.SetDeviceInfo(FormatJson({appId: m.appId$}))
-			jsonFilePath$ = GetPoolFilePath(m.bsp.assetPoolFiles, "commands.json")
-			cmds = GetCommands(jsonFilePath$)
-			cmds$ = FormatJson({cm: cmds})
-			print cmds$
-			m.bsp.btManager.btleClientManager.SetDeviceData(cmds$)
+			if type(m.bsp.btManager.btleClientManager) = "roBtClientManager" then
+				m.bsp.btManager.btleClientManager.SetDeviceInfo(FormatJson({appId: m.appId$}))
+				jsonFilePath$ = GetPoolFilePath(m.bsp.assetPoolFiles, "commands.json")
+				cmds = GetCommands(jsonFilePath$)
+				cmds$ = FormatJson({cm: cmds})
+				print cmds$
+				m.bsp.btManager.btleClientManager.SetDeviceData(cmds$)
+			else
+				print "-x-x-x - Could not create BtClientManager - check firmware version - must be 6.2.94 or higher"
+			endif
 			retval = true
 		endif
 	endif

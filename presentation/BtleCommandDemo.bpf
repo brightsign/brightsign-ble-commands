@@ -7,7 +7,7 @@
     <videoMode>1920x1080x60p</videoMode>
     <monitorOrientation>Landscape</monitorOrientation>
     <videoConnector>HDMI</videoConnector>
-    <customAutorun>Z:\Dev\DevSync\BrightSign\BrightSignBT\BtDemos\Btle\autorun.7.8.4.brs</customAutorun>
+    <customAutorun>C:\Projects\autorun-ble-custom.brs</customAutorun>
     <deviceWebPageDisplay>Standard</deviceWebPageDisplay>
     <alphabetizeVariableNames>True</alphabetizeVariableNames>
     <delayScheduleChangeUntilMediaEndEvent>False</delayScheduleChangeUntilMediaEndEvent>
@@ -192,23 +192,23 @@
         <autostart>True</autostart>
       </beacon>
     </beacons>
-    <additionalFileToPublish>Z:\Dev\DevSync\BrightSign\BrightSignBT\BtDemos\Btle\commands.json</additionalFileToPublish>
+    <additionalFileToPublish>C:\Projects\commands.json</additionalFileToPublish>
     <DirectoryLocations>
-      <AllFiles>Z:\Dev\DevSync\BrightSign\BrightSignBT\BtDemos\Btle</AllFiles>
-      <Image>Z:\Dev\DevSync\BrightSign\BrightSignBT\BtDemos\Btle</Image>
-      <Video>Z:\Dev\DevSync\BrightSign\BrightSignBT\BtDemos\Btle</Video>
-      <Audio>Z:\Dev\DevSync\BrightSign\BrightSignBT\BtDemos\Btle</Audio>
-      <Media>Z:\Dev\DevSync\BrightSign\BrightSignBT\BtDemos\Btle</Media>
-      <Fonts>Z:\Dev\DevSync\BrightSign\BrightSignBT\BtDemos\Btle</Fonts>
-      <HTML>Z:\Dev\DevSync\BrightSign\BrightSignBT\BtDemos\Btle</HTML>
-      <PluginScriptsAutoruns>Z:\Dev\DevSync\BrightSign\BrightSignBT\BtDemos\Btle</PluginScriptsAutoruns>
-      <CSV>Z:\Dev\DevSync\BrightSign\BrightSignBT\BtDemos\Btle</CSV>
-      <RFChannelScan>Z:\Dev\DevSync\BrightSign\BrightSignBT\BtDemos\Btle</RFChannelScan>
-      <Schedules>Z:\Dev\DevSync\BrightSign\BrightSignBT\BtDemos\Btle</Schedules>
-      <ReplacementMedia>Z:\Dev\DevSync\BrightSign\BrightSignBT\BtDemos\Btle</ReplacementMedia>
-      <UserVariables>Z:\Dev\DevSync\BrightSign\BrightSignBT\BtDemos\Btle</UserVariables>
-      <XModemFiles>Z:\Dev\DevSync\BrightSign\BrightSignBT\BtDemos\Btle</XModemFiles>
-      <ImportCommandFiles>Z:\Dev\DevSync\BrightSign\BrightSignBT\BtDemos\Btle</ImportCommandFiles>
+      <AllFiles>C:\Projects</AllFiles>
+      <Image>C:\Projects</Image>
+      <Video>C:\Projects</Video>
+      <Audio>C:\Projects</Audio>
+      <Media>C:\Projects</Media>
+      <Fonts>C:\Projects</Fonts>
+      <HTML>C:\Projects</HTML>
+      <PluginScriptsAutoruns>C:\Projects</PluginScriptsAutoruns>
+      <CSV>C:\Projects</CSV>
+      <RFChannelScan>C:\Projects</RFChannelScan>
+      <Schedules>C:\Projects</Schedules>
+      <ReplacementMedia>C:\Projects</ReplacementMedia>
+      <UserVariables>C:\Projects</UserVariables>
+      <XModemFiles>C:\Projects</XModemFiles>
+      <ImportCommandFiles>C:\Projects</ImportCommandFiles>
     </DirectoryLocations>
     <graphicsZOrder>Front</graphicsZOrder>
     <isMosaic>False</isMosaic>

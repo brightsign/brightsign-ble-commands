@@ -3,7 +3,7 @@ Library "autoplugins.brs"
 'region Main
 Sub Main()
 
-    autorunVersion$ = "7.8.4.1" 'BA 4.7.0.4
+    autorunVersion$ = "7.7.19.1" 'BA 4.6.0.19
     customAutorunVersion$ = "7.7.0"
 
     debugParams = EnableDebugging()
@@ -7175,12 +7175,6 @@ Sub newTransition(bsp As Object, zoneHSM As Object, sign As Object, transitionXM
         transition.targetMediaStateIsPreviousState = true
     endif
 
-	transition.remainOnCurrentStateActions = "none"
-	remainOnCurrentStateActions$ = transitionXML.remainOnCurrentStateActions.GetText()
-	if remainOnCurrentStateActions$ <> "" then
-		transition.remainOnCurrentStateActions = lcase(remainOnCurrentStateActions$)
-	endif
-
 	transition.assignInputToUserVariable = false
 	if lcase(transitionXML.assignInputToUserVariable.GetText()) = "true" then
 		transition.assignInputToUserVariable = true
@@ -7411,11 +7405,7 @@ Sub newTransition(bsp As Object, zoneHSM As Object, sign As Object, transitionXM
 			bsState.mediaEndEvent = transition
 
 		endif
-
-	else if userEventName$ = "mediaListEnd" then
-	
-		bsState.mediaListEndEvent = transition
-		        
+        
     else if userEventName$ = "keyboard" then
 
         keyboardChar$ = userEvent.parameters.parameter.GetText()
@@ -10119,8 +10109,6 @@ Sub newMediaListPlaylistItem(bsp As Object, zoneHSM As Object, playlistItemXML A
 	state.ConfigureBPButtons = ConfigureBPButtons
     state.ConfigureGPIOButtons = ConfigureGPIOButtons
 	
-	state.AtEndOfMediaList = AtEndOfMediaList
-
 End Sub
 
 
@@ -12270,22 +12258,7 @@ Function ExecuteTransition(transition As Object, stateData As Object, payload$ A
 	endif
 
 	if nextState$ = "" then
-
-		if transition.remainOnCurrentStateActions = "stop" then
-			if type(m.stateMachine.videoPlayer) = "roVideoPlayer" then
-				m.stateMachine.videoPlayer.Stop()
-			endif
-		else if transition.remainOnCurrentStateActions = "stopclear" then
-			if type(m.stateMachine.videoPlayer) = "roVideoPlayer" then
-				m.stateMachine.videoPlayer.StopClear()
-			endif
-			if type(m.stateMachine.imagePlayer) = "roImageWidget" then
-				m.stateMachine.imagePlayer.StopDisplay()
-			endif
-		endif
-
 		return "HANDLED"
-
 	else
 	    stateData.nextState = m.stateMachine.stateTable[nextState$]
 		stateData.nextState.payload$ = payload$
@@ -13003,31 +12976,6 @@ Function MediaItemEventHandler(event As Object, stateData As Object) As Object
 					if type(m.zoneMessageEvents[sendZoneMessageParameter$]) = "roAssociativeArray" then
 						m.bsp.logging.WriteEventLogEntry(m.stateMachine, m.id$, "sendZoneMessage", sendZoneMessageParameter$, "1")
 						return m.ExecuteTransition(m.zoneMessageEvents[sendZoneMessageParameter$], stateData, "")
-					else
-						' look for regular expression match with each of the possible zone message events for the current state
-						for each sendZoneMessageSpec in m.zoneMessageEvents
-							' only look for regular expressions if spec includes wildcard
-							if instr(1, sendZoneMessageSpec, "(.*)") > 0 then
-								r = CreateObject("roRegEx", sendZoneMessageSpec, "i")
-								if type(r) = "roRegex" then
-									matches = r.match(sendZoneMessageParameter$)
-									if matches.Count() > 0 then
-										transition = m.zoneMessageEvents[sendZoneMessageSpec]
-										m.bsp.logging.WriteEventLogEntry(m.stateMachine, m.id$, "sendZoneMessage", sendZoneMessageParameter$, "1")
-
-										if transition.assignInputToUserVariable then
-											transition.AssignEventInputToUserVariable(m.bsp, sendZoneMessageParameter$)
-										endif
-
-										if matches.Count() > 1 and transition.assignWildcardToUserVariable then
-											transition.AssignWildcardInputToUserVariable(m.bsp, matches[1])
-										endif
-
-										return m.ExecuteTransition(transition, stateData, sendZoneMessageParameter$)
-									endif
-								endif
-							endif
-						next
 					endif
 				endif
 
@@ -15063,13 +15011,8 @@ Function STDisplayingMediaListItemEventHandler(event As Object, stateData As Obj
             endif
             
         endif
-    
-	' detect whether or not this is an event that indicates that the media list has completed a loop - if yes, act on it if there is a mediaListEnd event
-	' test with media end event on media list first
-	else if m.AtEndOfMediaList(event) and type(m.mediaListEndEvent) = "roAssociativeArray" then
-		return m.ExecuteTransition(m.mediaListEndEvent, stateData, "")
-    
-	else if (m.mediaType$ = "video" or m.mediaType$ = "allMedia") and type(event) = "roVideoEvent" and event.GetSourceIdentity() = m.stateMachine.videoPlayer.GetIdentity() then
+            
+    else if (m.mediaType$ = "video" or m.mediaType$ = "allMedia") and type(event) = "roVideoEvent" and event.GetSourceIdentity() = m.stateMachine.videoPlayer.GetIdentity() then
 		if event.GetInt() = MEDIA_END then
             m.bsp.diagnostics.PrintDebug("Video Event" + stri(event.GetInt()))
 			m.bsp.logging.WriteEventLogEntry(m.stateMachine, m.id$, "mediaEnd", "", "1")
@@ -15179,12 +15122,6 @@ Function STDisplayingMediaListItemEventHandler(event As Object, stateData As Obj
 	if type(m.nextNavigation) = "roAssociativeArray" and m.playbackActive then
 		advance = m.HandleIntraStateEvent(event, m.nextNavigation)
 		if advance then
-
-			if type(m.advanceOnImageTimeoutTimer) = "roTimer" then
-				m.advanceOnImageTimeoutTimer.Stop()
-				m.advanceOnImageTimeoutTimer = invalid
-			endif
-
 			m.AdvanceMediaListPlayback(true, true)
 			return "HANDLED"
 		endif
@@ -15193,42 +15130,12 @@ Function STDisplayingMediaListItemEventHandler(event As Object, stateData As Obj
 	if type(m.previousNavigation) = "roAssociativeArray" and m.playbackActive then
 		retreat = m.HandleIntraStateEvent(event, m.previousNavigation)
 		if retreat then
-
-			if type(m.advanceOnImageTimeoutTimer) = "roTimer" then
-				m.advanceOnImageTimeoutTimer.Stop()
-				m.advanceOnImageTimeoutTimer = invalid
-			endif
-
 			m.RetreatMediaListPlayback(true, true)
 			return "HANDLED"
 		endif
 	endif    
     
 	return m.MediaItemEventHandler(event, stateData)	
-
-End Function
-
-
-Function AtEndOfMediaList(event As Object) As Boolean
-
-    MEDIA_END = 8
-	endOfMediaEvent = false
-
-	if (m.mediaType$ = "video" or m.mediaType$ = "allMedia") and type(event) = "roVideoEvent" and event.GetSourceIdentity() = m.stateMachine.videoPlayer.GetIdentity() and event.GetInt() = MEDIA_END then
-		endOfMediaEvent = true
-	else if (m.mediaType$ = "audio" or m.mediaType$ = "allMedia") and m.stateMachine.type$ = "EnhancedAudio" and type(event) = "roAudioEventMx" and event.GetInt() = MEDIA_END then
-		endOfMediaEvent = true
-    else if (m.mediaType$ = "audio" or m.mediaType$ = "allMedia") and m.stateMachine.type$ <> "EnhancedAudio" and IsAudioEvent(m.stateMachine, event) and event.GetInt() = MEDIA_END then
-		endOfMediaEvent = true
-	else if type(event) = "roTimerEvent" and m.advanceOnImageTimeout and type(m.advanceOnImageTimeoutTimer) = "roTimer" and event.GetSourceIdentity() = m.advanceOnImageTimeoutTimer.GetIdentity() and (m.playbackIndex% <> m.startIndex% or type(m.mstimeoutEvent) <> "roAssociativeArray") then
-		endOfMediaEvent = true
-	endif
-
-	if endOfMediaEvent and m.playbackIndex% = 0 then
-		return true
-	else
-		return false
-	endif
 
 End Function
 
@@ -31312,9 +31219,9 @@ Function newBtManager() as Object
 		btm.btManager.SetPort(m.msgPort)
 		btm.UpdatePersistentBeacons()
 	endif
-	' This custom autorun has to work with BA 4.6, which doesn't have the separate btleSupport variable in featureMinRevs
+	' This custom autorun has to work with BA 4.6.0.18, which doesn't have the separate btleSupport variable in featureMinRevs
 	' So for now, we will assume btle is supported if beacons are supported
-	' It is up to the user to make sure the firmware version is at least 6.2.100
+	' It is up to the user to make sure the firmware version is at least 6.2.94 (and preferably 6.2.100)
 	'if m.btleSupported then
 	if m.beaconsSupported then
 		btm.btleSupported = true
@@ -31428,11 +31335,14 @@ Function GetEddystoneUidBeaconData(namespace as String, instance as String, txLe
 End Function
 
 Sub UpdatePersistentBeacons()
-	m.persistentBeacons = {}
+	wasEmpty = m.persistentBeacons.IsEmpty()
+	m.persistentBeacons = { }
 	m.AddPersistentBeacon(m.bsp.registrySettings.beacon1)
 	m.AddPersistentBeacon(m.bsp.registrySettings.beacon2)
-	' Restart beacons to handle any persistent beacon changes
-	m.SetBtAdvertising()
+	if not (m.persistentBeacons.IsEmpty() and wasEmpty) then
+		' Restart beacons to handle any persistent beacon changes
+		m.SetBtAdvertising()
+	endif
 End Sub
 
 Function AddPersistentBeacon(beaconJson as String) as Boolean
@@ -31460,7 +31370,7 @@ Function AddPersistentBeacon(beaconJson as String) as Boolean
 					beaconType$ = "EddystoneUrl"
 					txp% = beaconInputData.TxLevel
 					beaconData = { mode: "eddystone-url", url: url, tx_power: txp%, persistent: true }
-			endif
+				endif
 			else if beaconType% = 2 then
 				beaconType$ = "EddystoneUid"
 				beaconData = GetEddystoneUidBeaconData(beaconInputData.BeaconId, beaconInputData.Data1, beaconInputData.TxLevel, true)
@@ -31563,12 +31473,13 @@ Function SetBtAdvertising()
 		if m.btManager.GetAdapterList().Count() > 0 then
 			' If a btClientManager is active, we need to set 'connectable' flag in all beacons
 			isConnectable = false
-			haveServices = false
+			sd = invalid
 			if m.btleClientManager <> invalid and m.btleServiceId <> invalid then
 				isConnectable = true
 				sd = {}
 				sd.uuid = m.BtleServiceId
-				haveServices = true
+				sd.data = m.btleClientServiceData
+				sd.data.SetEntry(5, m.btleStatus%)
 			endif
 			' Get array of beacon data that should be active now
 			beaconDataArray = [ ]
@@ -31576,9 +31487,7 @@ Function SetBtAdvertising()
 				beacon = m.persistentBeacons[beaconName]
 				data = beacon.data
 				data.connectable = isConnectable
-				if haveServices
-					sd.data = m.btleClientServiceData
-					sd.data.SetEntry(5, m.btleStatus%)
+				if sd <> invalid then
 					sdlist = [sd]
 					data.service_data = sdlist
 				end if
@@ -31590,9 +31499,7 @@ Function SetBtAdvertising()
 					if beaconDataArray.Count() < 5 then
 						data = beacon.data
 						data.connectable = isConnectable
-						if haveServices
-							sd.data = m.btleClientServiceData
-							sd.data.SetEntry(5, m.btleStatus%)
+						if sd <> invalid then
 							sdlist = [sd]
 							data.service_data = sdlist
 						end if
@@ -31607,9 +31514,7 @@ Function SetBtAdvertising()
 				endif
 			next
 			' If we have the BTLE client manager running, and there are no beacons defined, just advertise the client service
-			if beaconDataArray.Count() = 0 and haveServices then
-				sd.data = m.btleClientServiceData
-				sd.data.SetEntry(5, m.btleStatus%)
+			if beaconDataArray.Count() = 0 and sd <> invalid then
 				sdlist = [sd]
 				data = { mode: "custom", connectable: true, service_data: sdlist }
 				beaconDataArray.Push(data)
