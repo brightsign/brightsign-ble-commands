@@ -9,23 +9,17 @@
 import UIKit
 import CoreLocation
 
-protocol BTBeaconProximityDataDelegate {
-    func beaconProximityData(_ beaconData: BTBeaconProximityData, didChangeFilteredProximityTo newProximityFactor: CLProximity, from oldProximityFactor: CLProximity)
-
-}
-
 class BTBeaconProximityData: NSObject {
     
     weak var beacon: CLBeacon?
     
     var filteredProximityFactor : CLProximity = .unknown
+    var previousProximityFactor : CLProximity = .unknown
     fileprivate var filteredProximityFarCount = 0
     fileprivate var filteredProximityUnknownCount = 0
     fileprivate var foundInLastScan = false
     
     var appId = "";
-    
-    var delegate:  BTBeaconProximityDataDelegate?
     
     init(appId: String) {
         super.init()
@@ -70,9 +64,12 @@ class BTBeaconProximityData: NSObject {
                 filteredProximityFactor = .unknown
             }
         }
+        // When we transition from one proximity region to another, remember the previous proximity value.
+        // With this information, we can determine direction of travel (coming or going) when entering
+        //  the 'far' region
         if oldProximity != filteredProximityFactor {
+            previousProximityFactor = oldProximity
             //BBTLog.write("Changing filtered proximity factor for %@ to %@", appId, proximityString)
-            delegate?.beaconProximityData(self, didChangeFilteredProximityTo: filteredProximityFactor, from: oldProximity)
         }
         foundInLastScan = true
     }

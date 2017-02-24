@@ -12,7 +12,6 @@ import CoreLocation
 protocol BTBeaconManagerDelegate {
     func beaconManager(_ manager: BTBeaconManager, didEnterRegion beaconRegion: CLBeaconRegion)
     func beaconManager(_ manager: BTBeaconManager, didExitRegion beaconRegion: CLBeaconRegion)
-    func beaconManager(_ manager: BTBeaconManager, didUpdateBeaconRegionMap identifier: String)
 }
 
 extension CLBeacon
@@ -26,6 +25,9 @@ extension CLBeacon
 
 class BTBeaconManager: NSObject, CLLocationManagerDelegate {
 
+    // Singleton
+    static let sharedInstance = BTBeaconManager()
+    
     static let bsIdentifier = "BrightSign"
     static let bsLocationUUID = UUID(uuidString: "BE760858-9DE9-4685-BDD2-C75A1EF15DC8")!
     
@@ -216,8 +218,9 @@ class BTBeaconManager: NSObject, CLLocationManagerDelegate {
         if beaconRegionMaps[identifier] == nil {
             beaconRegionMaps[identifier] = BTBeaconRegionMap()
         }
-        beaconRegionMaps[identifier]!.update(beacons)
-        return beaconRegionMaps[identifier]!
+        let regionMap = beaconRegionMaps[identifier]!
+        regionMap.update(beacons)
+        return regionMap
     }
     
     func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
@@ -232,9 +235,7 @@ class BTBeaconManager: NSObject, CLLocationManagerDelegate {
         }
     }
     
-    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in beaconRegion: CLBeaconRegion) {
-        delegate?.beaconManager(self, didUpdateBeaconRegionMap: beaconRegion.identifier)
-        
+    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in beaconRegion: CLBeaconRegion) {        
         let regionMap = updateBeaconRegionMap(beaconRegion.identifier, beacons: beacons)
         NotificationCenter.default.post(name: Notification.Name(rawValue: "updateBeaconRegionMap"), object: self, userInfo: ["map": regionMap])
     }

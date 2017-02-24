@@ -94,13 +94,6 @@ class BTManager: NSObject, BTBeaconManagerDelegate, BTCentralManagerDelegate {
         isInRegion = false
     }
     
-    func beaconManager(_ manager: BTBeaconManager, didUpdateBeaconRegionMap identifier: String)
-    {
-//        if let regionMap = manager.getBeaconRegionMap(identifier) {
-//            centralManager.updateForBeaconRegionMap(regionMap)
-//        }
-    }
-    
     // MARK: - Central manager control
     
     func startScanningForPeripherals() {

@@ -18,6 +18,9 @@ protocol BTCentralManagerDelegate {
 
 class BTCentralManager: NSObject, CBCentralManagerDelegate {
 
+    // Singleton
+    static let sharedInstance = BTBeaconManager()
+    
     fileprivate var centralManager: CBCentralManager?
     
     fileprivate var peripheralScanEnabled = false
