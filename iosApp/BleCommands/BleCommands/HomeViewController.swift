@@ -3,17 +3,19 @@
 //  BrightSignBT
 //
 //  Created by Jim Sugg on 12/13/16.
-//  Copyright © 2016 BrightSign, LLC. All rights reserved.
+//  Copyright © 2017 BrightSign, LLC. All rights reserved.
 //
 
 import UIKit
+import CoreLocation
+import CoreBluetooth
 
-class HomeViewController: UIViewController, BTManagerDelegate {
+class HomeViewController: UIViewController, BTBeaconManagerDelegate, BTCentralManagerDelegate {
     
     fileprivate var currentPeripheralProximity : PeripheralProximity = .unknown
     fileprivate var currentPeripheralBusy = false
     fileprivate var actionViewActive = false
-    fileprivate var diagnosticsHidden = true
+    fileprivate var diagnosticsHidden = false
 
     @IBOutlet weak var contentContainerView: UIView!
     @IBOutlet weak var connectButton: UIButton!
@@ -42,7 +44,8 @@ class HomeViewController: UIViewController, BTManagerDelegate {
         
         add(asContentViewController: messageViewController)
         
-        BTManager.sharedInstance.delegate = self
+        BTBeaconManager.sharedInstance.delegate = self
+        BTCentralManager.sharedInstance.delegate = self
         startMonitoring()
     }
 
@@ -70,13 +73,13 @@ class HomeViewController: UIViewController, BTManagerDelegate {
     }
     
     func startMonitoring() {
-        BTManager.sharedInstance.startDefaultBeaconMonitoring()
-        BTManager.sharedInstance.startScanningForPeripherals()
+        BTBeaconManager.sharedInstance.startDefaultBeaconMonitoring()
+        BTCentralManager.sharedInstance.startScanningForPeripherals()
     }
     
     func stopMonitoring() {
-        BTManager.sharedInstance.stopDefaultBeaconMonitoring()
-        BTManager.sharedInstance.stopScanningForPeripherals()
+        BTBeaconManager.sharedInstance.stopDefaultBeaconMonitoring()
+        BTCentralManager.sharedInstance.stopScanningForPeripherals()
     }
     
     func peripheralRangeUpdated(_ notification: Notification) {
@@ -116,11 +119,11 @@ class HomeViewController: UIViewController, BTManagerDelegate {
     }
     
     @IBAction func toggleConnection(_ sender: UIButton) {
-        if BTManager.sharedInstance.isPeripheralSessionActive {
-            BTManager.sharedInstance.stopPeripheralSession()
+        if BTCentralManager.sharedInstance.activePeripheral != nil {
+            BTCentralManager.sharedInstance.stopSession()
             showMessageView()
         } else {
-            let success = BTManager.sharedInstance.startSessionWithClosestPeripheral()
+            let success = BTCentralManager.sharedInstance.startSessionWithClosestPeripheral()
             if (success) {
                 showActionView()
             }
@@ -164,9 +167,45 @@ class HomeViewController: UIViewController, BTManagerDelegate {
     @IBAction func returnedFromDiagnostics(_ segue: UIStoryboardSegue) {
     }
     
-    // MARK: - BT Manager delegate
+    // MARK: - Beacon manager delegate
     
-    func didChangeActivePeripheral(_ btBspPeripheral: BTBspPeripheral?) {
+    func beaconManager(_ manager: BTBeaconManager, didEnterRegion beaconRegion: CLBeaconRegion)
+    {
+        var notification : UILocalNotification?
+        
+        if !manager.isRangingForRegion(beaconRegion) {
+            manager.startRangingForRegion(beaconRegion)
+            // Display notification here only if app is in background
+            if UIApplication.shared.applicationState != .active {
+                notification = UILocalNotification()
+                notification!.alertBody = "Welcome to BrightSign"
+            }
+        }
+        
+        // Display the notification to the user if necessary
+        if let notification = notification {
+            UIApplication.shared.presentLocalNotificationNow(notification)
+        }
+    }
+    
+    func beaconManager(_ manager: BTBeaconManager, didExitRegion beaconRegion: CLBeaconRegion)
+    {
+        BBTLog.write("Exiting region %@", beaconRegion.identifier)
+        manager.stopRangingForRegion(beaconRegion)
+    }
+    
+    // MARK: - Central manager delegate
+    
+    func centralManager(_ manager:BTCentralManager, willConnectToPeripheral btBspPeripheral:BTBspPeripheral)
+    {
+    }
+    
+    func centralManager(_ manager:BTCentralManager, didDisconnectFromPeripheral btBspPeripheral:BTBspPeripheral)
+    {
+    }
+    
+    func centralManager(_ manager:BTCentralManager, didChangeActivePeripheral btBspPeripheral: BTBspPeripheral?)
+    {
         // Set a test name so we can test setting user data
         if let bsp = btBspPeripheral {
             bsp.setUserDataValue("Test User", key: "name")

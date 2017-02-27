@@ -3,7 +3,7 @@
 //  BrightSignBT
 //
 //  Created by Jim Sugg on 6/30/16.
-//  Copyright © 2016 BrightSign, LLC. All rights reserved.
+//  Copyright © 2017 BrightSign, LLC. All rights reserved.
 //
 
 import UIKit

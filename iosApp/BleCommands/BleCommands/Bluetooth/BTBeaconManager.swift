@@ -3,7 +3,7 @@
 //  BrightSignBT
 //
 //  Created by Jim Sugg on 2/22/16.
-//  Copyright © 2016 BrightSign, LLC. All rights reserved.
+//  Copyright © 2017 BrightSign, LLC. All rights reserved.
 //
 
 import UIKit
@@ -57,9 +57,6 @@ class BTBeaconManager: NSObject, CLLocationManagerDelegate {
         
         // Add default beacon region (BrightSign)
         beaconRegionsById[BTBeaconManager.bsIdentifier] = CLBeaconRegion(proximityUUID: BTBeaconManager.bsLocationUUID, identifier: BTBeaconManager.bsIdentifier)
-    }
-    
-    func prepareForBackground() {
     }
     
     // Allow addition of other beacon regions to monitor
@@ -125,6 +122,11 @@ class BTBeaconManager: NSObject, CLLocationManagerDelegate {
         }
     }
     
+    // Start monitoring for default beacon region
+    func startDefaultBeaconMonitoring() {
+        startBeaconMonitoring(BTBeaconManager.bsIdentifier)
+    }
+    
     func stopBeaconMonitoring(_ identifier: String) {
         if let locMgr = locationManager
         {
@@ -137,6 +139,10 @@ class BTBeaconManager: NSObject, CLLocationManagerDelegate {
                 }
             }
         }
+    }
+    
+    func stopDefaultBeaconMonitoring() {
+        stopBeaconMonitoring(BTBeaconManager.bsIdentifier)
     }
     
     func stopAllBeaconMonitoring() {

@@ -18,7 +18,6 @@
 		78DBBB841E59855B00A3F5C0 /* BTBeaconRegionMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DBBB771E59855A00A3F5C0 /* BTBeaconRegionMap.swift */; };
 		78DBBB851E59855B00A3F5C0 /* BTBspPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DBBB781E59855A00A3F5C0 /* BTBspPeripheral.swift */; };
 		78DBBB861E59855B00A3F5C0 /* BTCentralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DBBB791E59855A00A3F5C0 /* BTCentralManager.swift */; };
-		78DBBB871E59855B00A3F5C0 /* BTManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DBBB7A1E59855A00A3F5C0 /* BTManager.swift */; };
 		78DBBB881E59855B00A3F5C0 /* ConsoleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DBBB7B1E59855B00A3F5C0 /* ConsoleViewController.swift */; };
 		78DBBB891E59855B00A3F5C0 /* DebugViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DBBB7C1E59855B00A3F5C0 /* DebugViewController.swift */; };
 		78DBBB8A1E59855B00A3F5C0 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78DBBB7D1E59855B00A3F5C0 /* HomeViewController.swift */; };
@@ -40,7 +39,6 @@
 		78DBBB771E59855A00A3F5C0 /* BTBeaconRegionMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BTBeaconRegionMap.swift; sourceTree = "<group>"; };
 		78DBBB781E59855A00A3F5C0 /* BTBspPeripheral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BTBspPeripheral.swift; sourceTree = "<group>"; };
 		78DBBB791E59855A00A3F5C0 /* BTCentralManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BTCentralManager.swift; sourceTree = "<group>"; };
-		78DBBB7A1E59855A00A3F5C0 /* BTManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BTManager.swift; sourceTree = "<group>"; };
 		78DBBB7B1E59855B00A3F5C0 /* ConsoleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsoleViewController.swift; sourceTree = "<group>"; };
 		78DBBB7C1E59855B00A3F5C0 /* DebugViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugViewController.swift; sourceTree = "<group>"; };
 		78DBBB7D1E59855B00A3F5C0 /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
@@ -103,7 +101,6 @@
 				78DBBB771E59855A00A3F5C0 /* BTBeaconRegionMap.swift */,
 				78DBBB781E59855A00A3F5C0 /* BTBspPeripheral.swift */,
 				78DBBB791E59855A00A3F5C0 /* BTCentralManager.swift */,
-				78DBBB7A1E59855A00A3F5C0 /* BTManager.swift */,
 			);
 			path = Bluetooth;
 			sourceTree = "<group>";
@@ -192,7 +189,6 @@
 				78DBBB851E59855B00A3F5C0 /* BTBspPeripheral.swift in Sources */,
 				78DBBB831E59855B00A3F5C0 /* BTBeaconManager.swift in Sources */,
 				78DBBB881E59855B00A3F5C0 /* ConsoleViewController.swift in Sources */,
-				78DBBB871E59855B00A3F5C0 /* BTManager.swift in Sources */,
 				78DBBB8A1E59855B00A3F5C0 /* HomeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

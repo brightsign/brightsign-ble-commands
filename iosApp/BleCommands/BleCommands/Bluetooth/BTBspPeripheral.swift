@@ -3,7 +3,7 @@
 //  BrightSignBT
 //
 //  Created by Jim Sugg on 1/13/16.
-//  Copyright © 2016 BrightSign, LLC. All rights reserved.
+//  Copyright © 2017 BrightSign, LLC. All rights reserved.
 //
 
 import UIKit
@@ -292,6 +292,11 @@ class BTBspPeripheral: NSObject, CBPeripheralDelegate {
         if sessionActive && !lostScanContact {
             doWriteCharacteristic(BTBspPeripheral.bsCommandCharUUID, string: command)
         }
+    }
+    
+    func resetPlayerInfo() {
+        playerInfoValid = false
+        playerDataValid = false
     }
 
     fileprivate func updateUserData() {

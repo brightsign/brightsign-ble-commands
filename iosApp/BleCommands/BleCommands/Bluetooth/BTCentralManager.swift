@@ -3,7 +3,7 @@
 //  BrightSignBT
 //
 //  Created by Jim Sugg on 2/16/16.
-//  Copyright © 2016 BrightSign, LLC. All rights reserved.
+//  Copyright © 2017 BrightSign, LLC. All rights reserved.
 //
 
 import UIKit
@@ -19,7 +19,7 @@ protocol BTCentralManagerDelegate {
 class BTCentralManager: NSObject, CBCentralManagerDelegate {
 
     // Singleton
-    static let sharedInstance = BTBeaconManager()
+    static let sharedInstance = BTCentralManager()
     
     fileprivate var centralManager: CBCentralManager?
     
@@ -57,6 +57,7 @@ class BTCentralManager: NSObject, CBCentralManagerDelegate {
     }
     
     func prepareForBackground() {
+        BBTLog.write("Preparing for background")
         stopCheckingBspPeripheralSession()
         activePeripheral?.closeSession()
         for (_, bsPeripheral) in bsPeripheralsByAppId {
@@ -69,6 +70,7 @@ class BTCentralManager: NSObject, CBCentralManagerDelegate {
     }
     
     func prepareForForeground() {
+        BBTLog.write("Preparing for foreground")
         reset()
         startScanningForPeripherals()
         if peripheralScanEnabled {
@@ -196,6 +198,13 @@ class BTCentralManager: NSObject, CBCentralManagerDelegate {
         return false
     }
 
+    func startSessionWithClosestPeripheral() -> Bool {
+        if let bsPeripheral = closestPeripheral {
+            return startSession(with: bsPeripheral)
+        }
+        return false
+    }
+    
     func stopSession() {
         if let activePeripheral = activePeripheral {
             self.activePeripheral = nil
@@ -242,8 +251,8 @@ class BTCentralManager: NSObject, CBCentralManagerDelegate {
                 if activePeripheral.lostScanContact {
                     BBTLog.write("Resetting active peripheral")
                     activePeripheral.closeSession()
-                    delegate?.centralManager(self, didChangeActivePeripheral:nil)
                     self.activePeripheral = nil
+                    delegate?.centralManager(self, didChangeActivePeripheral:nil)
                 }
             }
             // Check for peripheral device removal from our list (for devices out of range > 30 seconds)

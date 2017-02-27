@@ -3,7 +3,7 @@
 //  BrightSignBT
 //
 //  Created by Jim Sugg on 12/16/16.
-//  Copyright © 2016 BrightSign, LLC. All rights reserved.
+//  Copyright © 2017 BrightSign, LLC. All rights reserved.
 //
 
 import UIKit
@@ -22,7 +22,7 @@ class ActionViewController: UITableViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let bsp = BTManager.sharedInstance.centralManager.activePeripheral {
+        if let bsp = BTCentralManager.sharedInstance.activePeripheral {
             setActions(bsp.commandArray)
         } else {
             setActions([])
@@ -56,9 +56,16 @@ class ActionViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let actionCommand = actionCommands[indexPath.row]
-        BTManager.sharedInstance.sendCommandToActivePeripheral(actionCommand)
-        tableView.deselectRow(at: indexPath, animated: false)
+        if indexPath.row < actionCommands.count {
+            let actionCommand = actionCommands[indexPath.row]
+            BTCentralManager.sharedInstance.sendCommandToActivePeripheral(actionCommand)
+            tableView.deselectRow(at: indexPath, animated: false)
+        } else {
+            BBTLog.write("Unexpected: Action command not found in list!")
+            if let bspPeripheral = BTCentralManager.sharedInstance.activePeripheral {
+                bspPeripheral.resetPlayerInfo()
+            }
+        }
     }
 
     /*
